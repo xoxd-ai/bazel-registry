@@ -35,7 +35,7 @@ jobs:
         with:
           app-id: ${{ secrets.TINYLAND_REGISTRY_APP_ID }}
           private-key: ${{ secrets.TINYLAND_REGISTRY_APP_KEY }}
-          owner: tinyland-inc
+          owner: ${{ github.repository_owner }}
           repositories: |-
             scheduling-bridge
             tempo-store
@@ -58,7 +58,7 @@ jobs:
           const token = process.env.TINYLAND_REGISTRY_GITHUB_TOKEN;
           if (!token) throw new Error('registry source token is missing');
 
-          const api = await fetch('https://api.github.com/repos/tinyland-inc/scheduling-bridge', {
+          const api = await fetch('https://api.github.com/repos/${{ github.repository_owner }}/scheduling-bridge', {
             headers: {
               Authorization: `Bearer ${token}`,
               Accept: 'application/vnd.github+json',
@@ -67,7 +67,7 @@ jobs:
           if (!api.ok) throw new Error(`registry source metadata read returned ${api.status}`);
 
           const archive = await fetch(
-            'https://api.github.com/repos/tinyland-inc/scheduling-bridge/tarball/v0.7.1',
+            'https://api.github.com/repos/${{ github.repository_owner }}/scheduling-bridge/tarball/v0.7.1',
             {
               headers: {
                 Authorization: `Bearer ${token}`,
