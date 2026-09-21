@@ -90,6 +90,8 @@ jobs:
         run: npm run validate
       - name: Prove source-host allowlist rejects non-GitHub sources
         run: npm run test:validate-source-hosts
+      - name: Prove the owner-rename allowance admits one shape and refuses its neighbours
+        run: npm run test:owner-rename-record
       - name: Build isolated scheduling-kit consumer
         run: npm run smoke:scheduling-kit-only
       - name: Build isolated tempo-store consumer

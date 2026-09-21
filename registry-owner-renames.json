@@ -1,0 +1,12 @@
+{
+  "schema": "tinyland.registry-owner-renames.v1",
+  "purpose": "The only edits a shipped module version may ever receive: following a recorded GitHub owner rename. GitHub embeds the owner in the top directory of api.github.com tarball archives, so a rename changes the bytes a shipped URL serves; re-recording url, strip_prefix and integrity restores one byte stream per version. scripts/owner-rename-record.mjs enforces the shape; the validate workflow proves the new integrity by building the consumer.",
+  "renames": [
+    {
+      "from": "tinyland-inc",
+      "to": "xoxd-ai",
+      "recorded": "2026-09-21",
+      "reason": "GitHub organisation renamed tinyland-inc to xoxd-ai (plan of record TIN-4435, ruling H1)."
+    }
+  ]
+}
