@@ -1,0 +1,46 @@
+"""
+xoxd_spectrogram: Svelte 5 + Skeleton 5.0.1 components and a DSP core for the XORuby
+signal and ML demos, themed with xoxd_theme (TIN-5108, design docs/design/xoxd-spectrogram.md
+in the deck). Bazel only; consumed as
+
+  bazel_dep(name = "xoxd_spectrogram", version = "0.1.0")
+  npm_link_package(name = "node_modules/@xoxd/spectrogram", src = "@xoxd_spectrogram//:pkg")
+
+MODULE.bazel is the only version site; //:test holds package.json to it.
+"""
+
+module(
+    name = "xoxd_spectrogram",
+    version = "0.1.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "aspect_rules_js", version = "2.9.1")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "xoxd_theme", version = "0.1.0")
+bazel_dep(name = "tummycrypt_tinyland_composables", version = "0.2.4")
+bazel_dep(name = "tummycrypt_tinyland_color_utils", version = "0.2.3")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node", dev_dependency = True)
+node.toolchain(node_version = "22.22.0")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm", dev_dependency = True)
+pnpm.pnpm(
+    name = "pnpm",
+    pnpm_version = "10.13.1",
+)
+use_repo(pnpm, "pnpm")
+
+# Not dev: a consumer's build of //:pkg runs svelte-package and esbuild from this lock.
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "xoxd_spectrogram_npm",
+    data = [
+        "//:package.json",
+        "//:pnpm-workspace.yaml",
+    ],
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+)
+use_repo(npm, "xoxd_spectrogram_npm")
