@@ -1,6 +1,6 @@
 {
-  "url": "https://api.github.com/repos/xoxd-ai/xoxd-spectrogram/tarball/TODO_SUBTREE_SPLIT_SHA",
-  "strip_prefix": "xoxd-ai-xoxd-spectrogram-TODO_SUBTREE_SPLIT_SHA",
-  "integrity": "sha256-TODO",
+  "url": "https://api.github.com/repos/xoxd-ai/xoxd-spectrogram/tarball/8264a38651c785aa0dd9c02e3569b2d979747d80",
+  "strip_prefix": "xoxd-ai-xoxd-spectrogram-8264a38651c785aa0dd9c02e3569b2d979747d80",
+  "integrity": "sha256-6+iooDhHX/AcbFU5e9p/Zk0cJqnRLJUTgA8OgdF7dZo=",
   "archive_type": "tar.gz"
 }
