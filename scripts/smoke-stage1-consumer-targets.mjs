@@ -90,6 +90,45 @@ function tempoStoreScenario() {
     };
 }
 
+// Public frontend modules whose archives are public release assets on this
+// repository (public-frontend-v* releases). No token is needed or used, so
+// this scenario runs on pull requests as well as in the trusted job.
+function publicFrontendScenario() {
+    const chromeVersion = latestPublishedVersion('xoxd_public_chrome');
+    const themeVersion = latestPublishedVersion('xoxd_theme');
+    return {
+        key: 'public-frontend-only',
+        workspaceName: 'tinyland_registry_public_frontend_only_smoke',
+        modules: [
+            { moduleName: 'xoxd_public_chrome', version: chromeVersion },
+            { moduleName: 'xoxd_theme', version: themeVersion },
+        ],
+        targets: ['@xoxd_public_chrome//:pkg', '@xoxd_theme//:pkg'],
+        graphExpectation: { moduleName: 'xoxd_theme', version: themeVersion },
+        requiresPrivateArchiveAuth: false,
+        tokenFree: true,
+        successLabel: `Built token-free public frontend consumer targets (chrome ${chromeVersion}, theme ${themeVersion})`,
+    };
+}
+
+// rules_tectonic: public GitHub tag archive, token-free. Builds the public
+// //tectonic package (rules and toolchain declarations) under the estate
+// Bazel; the root, docs and tests packages load dev-only dependencies and are
+// not part of the consumer surface.
+function rulesTectonicScenario() {
+    const version = latestPublishedVersion('rules_tectonic');
+    return {
+        key: 'rules-tectonic-only',
+        workspaceName: 'tinyland_registry_rules_tectonic_only_smoke',
+        modules: [{ moduleName: 'rules_tectonic', version }],
+        targets: ['@rules_tectonic//tectonic:all'],
+        graphExpectation: { moduleName: 'rules_tectonic', version },
+        requiresPrivateArchiveAuth: false,
+        tokenFree: true,
+        successLabel: `Built token-free rules_tectonic consumer targets (${version})`,
+    };
+}
+
 const scenarioFactories = {
     stage1: () => ({
         key: 'stage1',
@@ -114,6 +153,8 @@ const scenarioFactories = {
     'scheduling-kit-only': schedulingKitScenario,
     'scheduling-bridge-only': schedulingBridgeScenario,
     'tempo-store-only': tempoStoreScenario,
+    'public-frontend-only': publicFrontendScenario,
+    'rules-tectonic-only': rulesTectonicScenario,
 };
 
 const scenarioArgument = process.argv.find((argument) => argument.startsWith('--scenario='));
@@ -139,7 +180,9 @@ if (scenario.requiresPrivateArchiveAuth && !githubToken) {
 }
 
 function writeGitHubCredentialHelper(smokeDir) {
-	if (!githubToken) {
+	// A token-free scenario proves the public path: never attach credentials,
+	// even when a token happens to be in the environment.
+	if (scenario.tokenFree || !githubToken) {
 		return [];
 	}
 

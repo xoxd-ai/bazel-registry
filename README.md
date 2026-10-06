@@ -97,6 +97,13 @@ commit — see `docs/bazel-adoption-v0.md` §3 for the full convention.
   published bridge version and its declared kit version directly from registry
   metadata; it does not invent an unpublished successor.
 
+- `npm run smoke:public-frontend-only` / `npm run smoke:rules-tectonic-only`
+  — token-free consumers of public archives: `xoxd_public_chrome` +
+  `xoxd_theme` (public-frontend release assets) and `rules_tectonic` (public
+  tag archive, `//tectonic:all`). They never attach credentials, even if a token
+  is in the environment, so a green run proves the public path. Both run in the
+  pull-request `validate` job.
+
 The three isolated package smokes are required GF/self-hosted CI steps in
 `.github/workflows/validate.yml`. Bridge and Tempo consume commit-pinned private
 archives through GitHub's authenticated API tarball endpoint and fail closed
