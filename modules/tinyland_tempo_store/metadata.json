@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-invitation",
+  "homepage": "https://github.com/tinyland-inc/tempo-store",
   "maintainers": [
     {
       "name": "tinyland",
@@ -7,11 +7,7 @@
     }
   ],
   "versions": [
-    "0.2.2",
-    "0.2.3",
-    "0.2.4",
-    "0.2.5",
-    "0.2.7"
+    "0.1.0"
   ],
   "yanked_versions": {}
 }

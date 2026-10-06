@@ -1,0 +1,6 @@
+{
+  "url": "https://github.com/xoxd-ai/bazel-registry/releases/download/public-frontend-v0.1.1/xoxd_public_chrome-0.1.0.tar.gz",
+  "strip_prefix": "xoxd_public_chrome-0.1.0",
+  "integrity": "sha256-AdbvlPHa7HAxfWAGDyjRSO58d2eqhbxqyxKJjVs1RJI=",
+  "archive_type": "tar.gz"
+}

@@ -1,0 +1,20 @@
+# TODO(TIN-5108): xoxd-ai/xoxd-spectrogram does not exist yet (design §7 needs Jess's
+# ratification to create it). source.json carries TODO sha/integrity until the
+# `git subtree split --prefix=packages/xoxd_spectrogram` commit is pushed there.
+matrix:
+  platform:
+    - debian11
+    - ubuntu2204
+    - macos
+  bazel:
+    - 9.x
+tasks:
+  verify_targets:
+    name: Verify build targets
+    platform: ${{ platform }}
+    bazel: ${{ bazel }}
+    build_targets:
+      - "@xoxd_spectrogram//:pkg"
+      - "@xoxd_spectrogram//:typecheck"
+    test_targets:
+      - "@xoxd_spectrogram//:test"

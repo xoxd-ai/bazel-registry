@@ -1,0 +1,29 @@
+{
+  "tag": "site-scaffold-public-v0.1.1",
+  "repository": "xoxd-ai/bazel-registry",
+  "registry_commit": "6d008c192d1ef25f37e747fa1659109bcadb6666",
+  "artifacts": [
+    {
+      "module": "site-scaffold-public",
+      "version": "0.1.1",
+      "asset": "site-scaffold-public-0.1.1.tar.gz",
+      "strip_prefix": "site-scaffold-public-0.1.1",
+      "sha256": "9d834297fbd8103f30758ac58364c59ba628c8b09d6114b093cc68d5a5acf9a4",
+      "integrity": "sha256-nYNCl/vYED8wdYrFg2TFm6YoyLCdYRSwk8xo1aWs+aQ=",
+      "files": 35
+    }
+  ],
+  "template_only": true,
+  "sources": {
+    "scaffold": "3e46b9ede560cddbbfa91eb0157f09b89319c648",
+    "theme": "6c2e81a57dc0a71d5fff209b728309492222e50a"
+  },
+  "supersedes": [
+    {
+      "tag": "public-frontend-v0.1.1",
+      "asset": "site-scaffold-public-0.1.0.tar.gz",
+      "sha256": "ab5c6b0a379e13dcbce84340c2c214cf9517b97bbc9202bb9065fe7bd5d1608d",
+      "reason": "Template 0.1.1 materializes graph packages and editor types, compiles shared Svelte in live dev, and previews static output without an estate manifest."
+    }
+  ]
+}

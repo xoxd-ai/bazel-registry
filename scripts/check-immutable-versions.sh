@@ -12,6 +12,13 @@
 # checksum failures for every downstream consumer. Never re-edit a shipped
 # version; publish a new one.
 #
+# One allowance, and only one: a shipped source.json may be re-recorded to
+# follow a GitHub owner rename listed in registry-owner-renames.json, because
+# api.github.com tarball archives embed the owner in their top directory and a
+# rename changes the bytes a shipped URL serves. scripts/owner-rename-record.mjs
+# judges each such file against the base commit; anything it refuses is a
+# violation like any other.
+#
 # Usage: check-immutable-versions.sh [base-ref]
 #   base-ref defaults to $GITHUB_BASE_REF, then "main".
 set -eu
@@ -43,6 +50,7 @@ FROZEN="$(git ls-tree -r --name-only "${BASE}" -- modules \
   | sort -u)"
 
 VIOLATIONS=""
+RERECORDED=""
 # Every file this PR changes under modules/ (added/modified/deleted/renamed).
 CHANGED="$(git diff --name-only "${BASE}" HEAD -- modules)"
 
@@ -50,9 +58,21 @@ for f in ${CHANGED}; do
   vdir="$(version_dir_of "$f")"
   [ -z "$vdir" ] && continue
   if printf '%s\n' "${FROZEN}" | grep -Fxq "$vdir"; then
+    case "$f" in
+      */source.json)
+        if node scripts/owner-rename-record.mjs "${BASE}" "$f"; then
+          RERECORDED="${RERECORDED}${f}\n"
+          continue
+        fi
+        ;;
+    esac
     VIOLATIONS="${VIOLATIONS}${f}\n"
   fi
 done
+if [ -n "${RERECORDED}" ]; then
+  echo "immutability-gate: re-recorded under a listed owner rename (validate must prove the new integrity):"
+  printf "${RERECORDED}" | sed 's/^/  - /'
+fi
 
 if [ -n "${VIOLATIONS}" ]; then
   echo "" >&2

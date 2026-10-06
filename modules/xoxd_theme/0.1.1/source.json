@@ -1,0 +1,6 @@
+{
+  "url": "https://github.com/xoxd-ai/bazel-registry/releases/download/public-frontend-v0.1.1/xoxd_theme-0.1.1.tar.gz",
+  "strip_prefix": "xoxd_theme-0.1.1",
+  "integrity": "sha256-DtBiJ/++QAmLQF+M0gNEKptUEdiLEHndOev70ZfVT0U=",
+  "archive_type": "tar.gz"
+}

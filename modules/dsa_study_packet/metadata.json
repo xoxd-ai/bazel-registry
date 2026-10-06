@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/Jesssullivan/dsa-study-packet",
+  "homepage": "https://github.com/DSA-Woodshed/dsa-study-packet",
   "maintainers": [
     {
       "name": "Jess Sullivan",
@@ -7,7 +7,10 @@
     }
   ],
   "versions": [
-    "0.1.0"
+    "0.1.0",
+    "0.2.0"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {
+    "0.1.0": "The source archive omits generated booklet.tex; use 0.2.0, which generates all declared inputs in the public graph."
+  }
 }

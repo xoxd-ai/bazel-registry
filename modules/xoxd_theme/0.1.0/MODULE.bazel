@@ -1,0 +1,24 @@
+"""
+xoxd_theme: the xoxd.ai design tokens as a private Bazel module (rulings PC8a,
+PC8d; Linear TIN-5016). Consumed through xoxd-ai/bazel-registry:
+
+  bazel_dep(name = "xoxd_theme", version = "0.1.0")
+
+Bazel only; never published to any package registry. MODULE.bazel is the only
+version site.
+"""
+
+module(
+    name = "xoxd_theme",
+    version = "0.1.0",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "aspect_rules_js", version = "2.9.1")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+
+# Node 22.13.1 runs the tests and the block generator; nothing here needs an
+# npm package.
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node", dev_dependency = True)
+node.toolchain(node_version = "22.13.1")

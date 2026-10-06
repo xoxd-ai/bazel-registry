@@ -1,0 +1,104 @@
+name: Public frontend release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Immutable release plan to prepare
+        type: choice
+        options:
+          - site-scaffold-public-v0.1.1
+          - public-frontend-v0.1.1
+        default: site-scaffold-public-v0.1.1
+      publish:
+        description: Publish the audited versioned assets after verification
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: github.repository == 'xoxd-ai/bazel-registry' && github.ref == 'refs/heads/main'
+    runs-on: tinyland-nix
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read immutable release source revisions
+        id: source
+        run: |
+          jq -r '.sources | to_entries[] | "\(.key)=\(.value)"' releases/${{ inputs.release_tag }}/plan.json >> "$GITHUB_OUTPUT"
+          jq -r '"registry=" + .registry_commit' releases/${{ inputs.release_tag }}/plan.json >> "$GITHUB_OUTPUT"
+          jq -r '"template_only=" + ((.template_only // false) | tostring)' releases/${{ inputs.release_tag }}/plan.json >> "$GITHUB_OUTPUT"
+      - name: Mint a source-only read token
+        id: source-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        with:
+          app-id: ${{ secrets.TINYLAND_REGISTRY_APP_ID }}
+          private-key: ${{ secrets.TINYLAND_REGISTRY_APP_KEY }}
+          owner: xoxd-ai
+          repositories: |
+            site.scaffold
+            xoxd-theme
+          permission-contents: read
+      - uses: actions/checkout@v4
+        with:
+          repository: xoxd-ai/site.scaffold
+          ref: ${{ steps.source.outputs.scaffold }}
+          token: ${{ steps.source-token.outputs.token }}
+          persist-credentials: false
+          path: _source/scaffold
+      - uses: actions/checkout@v4
+        with:
+          repository: xoxd-ai/xoxd-theme
+          ref: ${{ steps.source.outputs.theme }}
+          token: ${{ steps.source-token.outputs.token }}
+          persist-credentials: false
+          path: _source/theme
+      - name: Build deterministic narrowed archives
+        run: |
+          export_args=()
+          if [ "${{ steps.source.outputs.template_only }}" = true ]; then export_args+=(--template-only); fi
+          python3 _source/scaffold/scripts/export-public-frontend.py --theme-source _source/theme --output public-assets --registry-commit "${{ steps.source.outputs.registry }}" "${export_args[@]}"
+          python3 scripts/verify-public-frontend.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
+          python3 scripts/test-verify-public-frontend.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
+          python3 scripts/test-release-publication-admission.py
+      - name: Summarize the audited asset set
+        env:
+          PUBLISH_REQUESTED: ${{ inputs.publish }}
+        run: |
+          {
+            echo '### Verified public frontend assets'
+            echo
+            echo "Publication requested: $PUBLISH_REQUESTED"
+            echo
+            echo '```json'
+            cat public-assets/manifest.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat public-assets/SHA256SUMS
+      - name: Verify the exact release bytes again
+        if: inputs.publish
+        run: python3 scripts/verify-public-frontend.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
+      - name: Publish a new immutable asset set
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          nix shell --no-update-lock-file --inputs-from ./_source/scaffold/public/template nixpkgs#gh --command bash -euo pipefail <<'PUBLISH'
+          gh --version
+          if ! release_tags="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[].tag_name')"; then
+            echo 'Unable to verify existing releases; refusing publication.' >&2
+            exit 1
+          fi
+          if printf '%s\n' "$release_tags" | grep -Fx -- "$RELEASE_TAG" >/dev/null; then
+            echo 'Refusing to replace an existing frontend release.' >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" public-assets/*.tar.gz public-assets/SHA256SUMS public-assets/manifest.json --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "$RELEASE_TAG" --notes-file "releases/${RELEASE_TAG}/NOTES.md"
+          PUBLISH

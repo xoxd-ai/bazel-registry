@@ -67,15 +67,43 @@ commit — see `docs/bazel-adoption-v0.md` §3 for the full convention.
 
 - `npm run validate` (`scripts/validate-registry.mjs`) — pure static checks:
   every `source.json` has SRI integrity, no `tinyland.dev` tarball
-  references, `metadata.json` and `MODULE.bazel` agree on name/version, and
+  references, its `url` resolves to an allowed GitHub source host (a
+  `github.com/<owner>/<repo>/archive/refs/tags/<tag>.tar.gz` release archive,
+  or an `api.github.com/repos/<owner>/<repo>/tarball/<ref>` authenticated
+  tarball for private repos -- package-registry hosts such as
+  `registry.npmjs.org` and `npm.pkg.github.com` are explicitly refused),
+  `metadata.json` and `MODULE.bazel` agree on name/version, and
   `.bazelversion` matches the recorded estate pin. No network.
+- `npm run test:validate-source-hosts`
+  (`scripts/test-validate-registry-source-hosts.mjs`): fixture-driven
+  negative control for the source-host allowlist above. Builds throwaway
+  one-module registry fixtures in a temp dir and runs `validate-registry.mjs`
+  against each, proving both that allowed URL shapes still pass and that
+  `registry.npmjs.org`, `npm.pkg.github.com`, and any other unlisted host are
+  rejected. `npm run validate` alone can't prove the refusal path: this
+  repo's real `modules/` tree has no disallowed-host entries to exercise it.
 - `scripts/check-immutable-versions.sh` — rejects edits to already-shipped
   module version directories (immutability gate).
 - `npm run smoke:resolve` / `npm run smoke:stage1-consumer` — network and
-  GitHub-token dependent; actually exercise `.bazelversion` and this
-  registry's module metadata through real `bazel mod graph` /
-  `bazel build` runs in a throwaway workspace. Required CI steps in
-  `.github/workflows/validate.yml`.
+  GitHub-token dependent; exercise `.bazelversion` and this registry's module
+  metadata through real `bazel mod graph` / `bazel build` runs in throwaway
+  workspaces.
+- `npm run smoke:scheduling-kit-only` / `npm run
+  smoke:scheduling-bridge-only` / `npm run smoke:tempo-store-only` — isolated
+  one-direct-dependency consumers.
+  Each resolves the selected graph and builds only that module's `//:pkg`, so
+  an aggregate root dependency cannot raise and mask scheduling-bridge's
+  declared scheduling-kit edge. The bridge proof reads the latest active
+  published bridge version and its declared kit version directly from registry
+  metadata; it does not invent an unpublished successor.
+
+The three isolated package smokes are required GF/self-hosted CI steps in
+`.github/workflows/validate.yml`. Bridge and Tempo consume commit-pinned private
+archives through GitHub's authenticated API tarball endpoint and fail closed
+when `TINYLAND_REGISTRY_GITHUB_TOKEN` is absent. The aggregate and Stage 1
+legacy-compatibility audits still run and report their failures, but they do not
+mask or block current package successors while immutable older private entries
+retain browser-archive URLs that GitHub App tokens cannot read.
 
 ## Docs
 

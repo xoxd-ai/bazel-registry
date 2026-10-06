@@ -1,0 +1,39 @@
+{
+  "tag": "public-frontend-v0.1.1",
+  "repository": "xoxd-ai/bazel-registry",
+  "registry_commit": "6d008c192d1ef25f37e747fa1659109bcadb6666",
+  "artifacts": [
+    {
+      "module": "xoxd_public_chrome",
+      "version": "0.1.0",
+      "asset": "xoxd_public_chrome-0.1.0.tar.gz",
+      "strip_prefix": "xoxd_public_chrome-0.1.0",
+      "sha256": "01d6ef94f1daec70317d60060f28d148ee7c7767aa85bc6acb12898d5b354492",
+      "integrity": "sha256-AdbvlPHa7HAxfWAGDyjRSO58d2eqhbxqyxKJjVs1RJI=",
+      "files": 21
+    },
+    {
+      "module": "xoxd_theme",
+      "version": "0.1.1",
+      "asset": "xoxd_theme-0.1.1.tar.gz",
+      "strip_prefix": "xoxd_theme-0.1.1",
+      "sha256": "0ed06227ffbe40098b405f8cd203442a9b5411d88b1079dd39ebfbd197d54f45",
+      "integrity": "sha256-DtBiJ/++QAmLQF+M0gNEKptUEdiLEHndOev70ZfVT0U=",
+      "files": 26
+    },
+    {
+      "module": "site-scaffold-public",
+      "version": "0.1.0",
+      "asset": "site-scaffold-public-0.1.0.tar.gz",
+      "strip_prefix": "site-scaffold-public-0.1.0",
+      "sha256": "ab5c6b0a379e13dcbce84340c2c214cf9517b97bbc9202bb9065fe7bd5d1608d",
+      "integrity": "sha256-q1xrCjeeE9y86ENAwsIUz5UXuXu8kgK7kGX+e9XRYI0=",
+      "files": 35
+    }
+  ],
+  "sources": {
+    "scaffold": "c62108b6c615cc68015cbe8db42f64bbec1e81f9",
+    "theme": "6c2e81a57dc0a71d5fff209b728309492222e50a",
+    "xoxd": "8bbcd3aeb9dc8a9af1c3dbf9526342bebbd3d18e"
+  }
+}
