@@ -29,8 +29,10 @@ This registry is a **public** repo. Estate repos are named here only where the
 name is already public:
 
 - `greatfallstoolbus.org` — public spoke, named directly.
-- `tinyland-inc/bazel-registry` — this repo, public.
-- `tinyland-inc/site.scaffold` — the template spoke; already named in the
+- `xoxd-ai/bazel-registry` — this repo, public (formerly
+  `tinyland-inc/bazel-registry`; GitHub redirects the old name).
+- `xoxd-ai/site.scaffold` (formerly `tinyland-inc/site.scaffold`) — the
+  template spoke; already named in the
   public spoke's `AGENTS.md`, and as "a site.scaffold spoke" in Step A §5.
 - `GloriousFlywheel` — the shared cache substrate; already named in the public
   spoke's `.bazelrc.flywheel`, `Justfile`, and
@@ -120,11 +122,11 @@ repo's checked-out default branch at authoring time. Re-read GF at its current
 | Repo | `.bazelversion` | Module system | `lockFileVersion` | Registry pin |
 | --- | --- | --- | --- | --- |
 | `greatfallstoolbus.org` (public spoke) | 8.2.1 | Bzlmod only; no `WORKSPACE*` file | 18 | mutable `main` ref (Step A converges it to exact SHA) |
-| `tinyland-inc/site.scaffold` (template spoke) | 8.2.1 | Bzlmod only; no `WORKSPACE*` file | 18 | exact 40-char SHA |
+| `xoxd-ai/site.scaffold` (template spoke) | 8.2.1 | Bzlmod only; no `WORKSPACE*` file | 18 | exact 40-char SHA |
 | the private sibling spoke | 8.2.1 (per Step A §1) | Bzlmod | not read here | exact 40-char SHA (origin of the convention, Step A §3) |
 | the private tooling repo | 7.6.0 | Bzlmod only; no `WORKSPACE*` file | 13 | BCR only (no in-house registry lane) |
 | `GloriousFlywheel` (cache substrate) | 7.4.1 | Bzlmod **plus** a vestigial 7-line `WORKSPACE.bazel` | 11 | BCR only |
-| `tinyland-inc/bazel-registry` (this repo) | 8.2.1 on `main` (Step A merged) | **not a Bazel workspace** — no `MODULE.bazel`, `WORKSPACE`, `BUILD`, or `.bazelrc` | n/a | n/a |
+| `xoxd-ai/bazel-registry` (this repo) | 8.2.1 on `main` (Step A merged) | **not a Bazel workspace** — no `MODULE.bazel`, `WORKSPACE`, `BUILD`, or `.bazelrc` | n/a | n/a |
 
 Two things this table settles:
 
@@ -593,9 +595,9 @@ Each step lists its gate, its rollback, and why it sits where it does.
 | # | Repo | Gate before starting | Rollback |
 | --- | --- | --- | --- |
 | 0 | *(all repos)* pre-flight + measurement, no bump | — | n/a |
-| 1 | `tinyland-inc/bazel-registry` | step 0 done | revert one commit |
+| 1 | `xoxd-ai/bazel-registry` | step 0 done | revert one commit |
 | 2 | in-house modules (this registry) | **step 1 run** (empty if step 1 was green) | new versions inert until pinned |
-| 3 | `tinyland-inc/site.scaffold` | steps 1–2 green | revert `.bazelversion` + lock commit |
+| 3 | `xoxd-ai/site.scaffold` | steps 1–2 green | revert `.bazelversion` + lock commit |
 | 4 | `greatfallstoolbus.org` | step 3 green | revert `.bazelversion` + lock commit |
 | 5 | the private sibling spoke | step 4 green | revert `.bazelversion` + lock commit |
 | 6 | the private tooling repo (**writes cache**) | steps 3–5 green | revert `.bazelversion` + lock commit |
@@ -694,7 +696,7 @@ Proves module resolution succeeds under the pinned version and the pinned
 registry chain. Catches §3.6 resolve failures and every floor violation in
 §2.3. It does **not** prove anything builds.
 
-**`tinyland-inc/bazel-registry` (this repo)** — it has no Justfile; its checks
+**`xoxd-ai/bazel-registry` (this repo)** — it has no Justfile; its checks
 are npm scripts, matching Step A §5:
 
 ```bash
@@ -708,7 +710,7 @@ The two smoke scripts need `TINYLAND_REGISTRY_GITHUB_TOKEN` (and
 `GITHUB_TOKEN` for stage 1) per `.github/workflows/validate.yml`; they are the
 only steps here that touch the network.
 
-**`greatfallstoolbus.org` and `tinyland-inc/site.scaffold`:**
+**`greatfallstoolbus.org` and `xoxd-ai/site.scaffold`:**
 
 ```bash
 just bazel-graph          # bazelisk mod graph under an isolated --output_user_root
@@ -781,7 +783,7 @@ existing one:
 
 ```
 # estate-bazelversion: 8.2.1
-# estate-bazelversion-source: https://raw.githubusercontent.com/tinyland-inc/bazel-registry/6f4d35d266fdbc66cb0ad98e02680bbd9a296d0c/.bazelversion
+# estate-bazelversion-source: https://raw.githubusercontent.com/xoxd-ai/bazel-registry/8d3e5407863132f62c14a5d674435890823a9d22/.bazelversion
 ```
 
 Two constraints force this shape, and both were verified rather than assumed.
