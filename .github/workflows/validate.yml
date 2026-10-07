@@ -49,6 +49,10 @@ jobs:
         run: npm run test:owner-rename-record
       - name: Build isolated scheduling-kit consumer
         run: npm run smoke:scheduling-kit-only
+      - name: Build token-free public frontend consumer (chrome + theme)
+        run: npm run smoke:public-frontend-only
+      - name: Build token-free rules_tectonic consumer
+        run: npm run smoke:rules-tectonic-only
 
   # Authenticate only reviewed main code after a push or an explicit main-ref
   # dispatch in the authoritative repository. Never project secrets into PRs.
@@ -68,7 +72,7 @@ jobs:
           node-version: 22
       - name: Mint Tinyland registry source token
         id: tinyland-registry-token
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
         with:
           app-id: ${{ secrets.TINYLAND_REGISTRY_APP_ID }}
           private-key: ${{ secrets.TINYLAND_REGISTRY_APP_KEY }}
