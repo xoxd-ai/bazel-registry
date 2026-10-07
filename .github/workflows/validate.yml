@@ -49,6 +49,10 @@ jobs:
         run: npm run test:owner-rename-record
       - name: Build isolated scheduling-kit consumer
         run: npm run smoke:scheduling-kit-only
+      - name: Build token-free public frontend consumer (chrome + theme)
+        run: npm run smoke:public-frontend-only
+      - name: Build token-free rules_tectonic consumer
+        run: npm run smoke:rules-tectonic-only
 
   # Authenticate only reviewed main code after a push or an explicit main-ref
   # dispatch in the authoritative repository. Never project secrets into PRs.
