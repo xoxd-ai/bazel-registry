@@ -1,0 +1,10 @@
+{
+  "url": "https://api.github.com/repos/xoxd-ai/vite-plugin-a11y/tarball/52f8f70e86f1796fa3bd020f7160a6e7f4881043",
+  "strip_prefix": "xoxd-ai-vite-plugin-a11y-52f8f70",
+  "integrity": "sha256-0mHvsRWx1GTL2tUPC084e0qO0cUXzs3wnVhpYN/7tuQ=",
+  "archive_type": "tar.gz",
+  "patches": {
+    "standalone-npm-repo.patch": "sha256-RobvZiYHzr31c+BgkaV5gYr3TKU58obDhHVm7hjSuy4="
+  },
+  "patch_strip": 1
+}
