@@ -1,6 +1,6 @@
 {
-  "url": "https://api.github.com/repos/Jesssullivan/tsidp-flags/tarball/3ef4fa84e60fca62e763d9c699ca534992decea9",
-  "strip_prefix": "Jesssullivan-tsidp-flags-3ef4fa8/packages/flags",
-  "integrity": "sha256-Wg4VpclAN2NcwKEGxFl6/1ipo7bk+iiCydhAxej1c1Q=",
+  "url": "https://github.com/Jesssullivan/tsidp-flags/archive/refs/tags/v0.1.0.tar.gz",
+  "strip_prefix": "tsidp-flags-0.1.0/packages/flags",
+  "integrity": "sha256-0LoHUvFlsKqnXy+DhE2NM20/nxRoMlwmQ4/sYCW9E/A=",
   "archive_type": "tar.gz"
 }
