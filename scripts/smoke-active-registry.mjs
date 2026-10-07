@@ -10,6 +10,21 @@ const status = registry.status ?? 'active';
 const moduleBasePath = registry.module_base_path ?? 'modules';
 const modulesDir = path.join(root, moduleBasePath);
 
+// Modules left out of the aggregate audit, each with the reason. Keep this
+// list to the minimum: every other active module stays in the graph so the
+// audit can surface the next masked failure.
+//
+// dsa_study_packet@0.2.0 pulls rules_python 2.4.0, whose MODULE.bazel calls
+// flag_alias, which Bazel 8.2.1 (bazelEstate.version) does not define. The
+// producer fix is a bazel_compatibility >=9.0.0 release (0.2.1); until it lands
+// the module cannot resolve under the estate Bazel in any aggregate graph.
+const AUDIT_EXCLUDED_MODULES = new Map([
+	[
+		'dsa_study_packet',
+		'rules_python 2.4.0 MODULE.bazel uses flag_alias, which Bazel 8.2.1 does not define',
+	],
+]);
+
 function listModuleVersions() {
 	if (status !== 'active') {
 		return [];
@@ -43,7 +58,14 @@ function listModuleVersions() {
 		);
 }
 
-const modules = listModuleVersions();
+const modules = listModuleVersions().filter(({ moduleName, version }) => {
+	const reason = AUDIT_EXCLUDED_MODULES.get(moduleName);
+	if (reason) {
+		console.log(`Excluded from the aggregate audit: ${moduleName}@${version} (${reason}).`);
+		return false;
+	}
+	return true;
+});
 if (modules.length === 0) {
 	console.log('No active modules to smoke test.');
 	process.exit(0);
