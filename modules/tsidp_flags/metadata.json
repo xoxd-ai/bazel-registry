@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-a11y-engine",
+  "homepage": "https://github.com/Jesssullivan/tsidp-flags",
   "maintainers": [
     {
       "name": "tinyland",
@@ -7,10 +7,7 @@
     }
   ],
   "versions": [
-    "0.2.2",
-    "0.2.3",
-    "0.2.4",
-    "0.3.0"
+    "0.1.0"
   ],
   "yanked_versions": {}
 }

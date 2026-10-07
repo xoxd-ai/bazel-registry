@@ -11,7 +11,9 @@
     "smoke:stage1-consumer": "node scripts/smoke-stage1-consumer-targets.mjs",
     "smoke:scheduling-kit-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=scheduling-kit-only",
     "smoke:scheduling-bridge-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=scheduling-bridge-only",
-    "smoke:tempo-store-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=tempo-store-only"
+    "smoke:tempo-store-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=tempo-store-only",
+    "smoke:public-frontend-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=public-frontend-only",
+    "smoke:rules-tectonic-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=rules-tectonic-only"
   },
   "bazelEstate": {
     "version": "8.2.1"
