@@ -10,5 +10,5 @@
     "0.2.0"
   ],
   "yanked_versions": {},
-  "deprecated": "Retired 2026-10-08 (RU2/RU7). Merged into tummycrypt_tinyland_content as the ./activity-feed subpath export (@tummycrypt/tinyland-content/activity-feed, same API) and root facade re-exports, shipped from the first tummycrypt_tinyland_content release after 0.4.0. Source repo xoxd-ai/tinyland-activity-feed is archived. 0.2.0 stays resolvable; nothing is yanked."
+  "deprecated": "Retired 2026-10-08 (RU2/RU7). Merged into tummycrypt_tinyland_content as the ./activity-feed subpath export (@tummycrypt/tinyland-content/activity-feed, same API) and root facade re-exports, shipped in tummycrypt_tinyland_content 0.5.0 and later. Source repo xoxd-ai/tinyland-activity-feed is archived. 0.2.0 stays resolvable; nothing is yanked."
 }
