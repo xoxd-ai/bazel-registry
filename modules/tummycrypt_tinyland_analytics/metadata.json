@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-analytics",
+  "homepage": "https://github.com/xoxd-ai/tinyland-analytics",
   "maintainers": [
     {
       "name": "tinyland",
@@ -9,5 +9,6 @@
   "versions": [
     "0.2.2"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-09 (RU2/RU7). No replacement module: no live app or registry module depends on it (its only users were the tinyland.dev packages/ copy and an uncalled migration script). Source repo xoxd-ai/tinyland-analytics is archived. 0.2.2 stays resolvable; nothing is yanked."
 }
