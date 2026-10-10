@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-physics",
+  "homepage": "https://github.com/xoxd-ai/tinyland-physics",
   "maintainers": [
     {
       "name": "tinyland",
@@ -9,5 +9,6 @@
   "versions": [
     "0.2.2"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-10 (RU2/RU7). No live consumer. Successor: tummycrypt_tinyvectors (xoxd-ai/tinyvectors), which carries its own blob physics, scroll handling and device motion in @tummycrypt/tinyvectors/core and ./motion; the APIs differ, so callers port rather than swap imports. Source repo xoxd-ai/tinyland-physics is archived. 0.2.2 stays resolvable; nothing is yanked."
 }
