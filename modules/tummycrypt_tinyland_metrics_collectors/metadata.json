@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-metrics-collectors",
+  "homepage": "https://github.com/xoxd-ai/tinyland-metrics-collectors",
   "maintainers": [
     {
       "name": "tinyland",
@@ -10,5 +10,6 @@
     "0.2.2",
     "0.2.3"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-10 (RU2/RU7). Merged into tummycrypt_tinyland_otel as the ./metrics-collectors subpath export (@tummycrypt/tinyland-otel/metrics-collectors, same API) and same-name root re-exports, shipped in tummycrypt_tinyland_otel 1.3.0 and later. Source repo xoxd-ai/tinyland-metrics-collectors is archived. 0.2.2 and 0.2.3 stay resolvable; nothing is yanked."
 }
