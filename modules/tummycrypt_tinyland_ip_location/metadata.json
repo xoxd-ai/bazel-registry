@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-ip-location",
+  "homepage": "https://github.com/xoxd-ai/tinyland-ip-location",
   "maintainers": [
     {
       "name": "tinyland",
@@ -9,5 +9,6 @@
   "versions": [
     "0.2.2"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-10 (RU2/RU7). No live consumer and no replacement module; IP geolocation, user-agent parsing and visitor analytics are no longer an in-house package. Source repo xoxd-ai/tinyland-ip-location is archived. 0.2.2 stays resolvable; nothing is yanked."
 }
