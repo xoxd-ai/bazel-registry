@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-file-logger",
+  "homepage": "https://github.com/xoxd-ai/tinyland-file-logger",
   "maintainers": [
     {
       "name": "tinyland",
@@ -9,5 +9,6 @@
   "versions": [
     "0.2.2"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-10 (RU2/RU7): no live consumer. Not carried forward to the RU1 stack and no drop-in replacement; for logging use tummycrypt_tinyland_logging. Source repo xoxd-ai/tinyland-file-logger is archived. 0.2.2 stays resolvable; nothing is yanked."
 }
