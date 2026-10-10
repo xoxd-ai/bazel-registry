@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-credentials-generator",
+  "homepage": "https://github.com/xoxd-ai/tinyland-credentials-generator",
   "maintainers": [
     {
       "name": "tinyland",
@@ -10,5 +10,6 @@
     "0.2.2",
     "0.2.3"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-09 (RU2/RU7). No replacement module: no live app or registry module depends on it (its only user was the tinyland.dev admin invite direct-create path, which the Mothership integration branch replaces with the invitation-service flow). Source repo xoxd-ai/tinyland-credentials-generator is archived. 0.2.2 and 0.2.3 stay resolvable; nothing is yanked."
 }
