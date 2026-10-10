@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-color-utils",
+  "homepage": "https://github.com/xoxd-ai/tinyland-color-utils",
   "maintainers": [
     {
       "name": "tinyland",
@@ -8,7 +8,8 @@
   ],
   "versions": [
     "0.2.2",
-    "0.2.3"
+    "0.2.3",
+    "1.0.0"
   ],
   "yanked_versions": {}
 }
