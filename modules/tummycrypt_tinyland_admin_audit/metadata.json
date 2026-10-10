@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-admin-audit",
+  "homepage": "https://github.com/xoxd-ai/tinyland-admin-audit",
   "maintainers": [
     {
       "name": "tinyland",
@@ -10,5 +10,6 @@
     "0.2.2",
     "0.2.3"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-09 (RU2/RU7). Merged into tummycrypt_tinyland_logging 1.2.0 as the ./admin-audit subpath export (@tummycrypt/tinyland-logging/admin-audit, same API). Source repo xoxd-ai/tinyland-admin-audit is archived. 0.2.2 and 0.2.3 stay resolvable; nothing is yanked."
 }
