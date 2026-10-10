@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-forms",
+  "homepage": "https://github.com/xoxd-ai/tinyland-forms",
   "maintainers": [
     {
       "name": "tinyland",
@@ -10,5 +10,6 @@
     "0.2.2",
     "0.2.3"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-10 (RU2/RU3/RU7). No replacement module: no live app imports it (tinyland.dev carries only build wiring). Its Zod and sveltekit-superforms helpers are superseded by SvelteKit remote form() with Effect Schema / Standard Schema validation (RU3). Source repo xoxd-ai/tinyland-forms is archived. 0.2.2 and 0.2.3 stay resolvable; nothing is yanked."
 }
