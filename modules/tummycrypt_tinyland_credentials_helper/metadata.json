@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-credentials-helper",
+  "homepage": "https://github.com/xoxd-ai/tinyland-credentials-helper",
   "maintainers": [
     {
       "name": "tinyland",
@@ -9,5 +9,6 @@
   "versions": [
     "0.2.2"
   ],
-  "yanked_versions": {}
+  "yanked_versions": {},
+  "deprecated": "Retired 2026-10-09 (RU2/RU7). No replacement module: no live app or registry module depends on it (tinyland.dev carries only an unused workspace copy under packages/, with no bazel_dep and no import). Source repo xoxd-ai/tinyland-credentials-helper is archived. 0.2.2 stays resolvable; nothing is yanked."
 }
