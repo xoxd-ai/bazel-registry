@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/tinyland-inc/tinyland-security",
+  "homepage": "https://github.com/xoxd-ai/tinyland-security",
   "maintainers": [
     {
       "name": "tinyland",
@@ -11,7 +11,8 @@
     "0.2.3",
     "0.3.0",
     "0.3.1",
-    "0.3.2"
+    "0.3.2",
+    "1.0.0"
   ],
   "yanked_versions": {}
 }
