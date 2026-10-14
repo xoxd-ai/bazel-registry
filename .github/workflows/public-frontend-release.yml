@@ -9,6 +9,7 @@ on:
         options:
           - site-scaffold-public-v0.1.1
           - public-frontend-v0.1.1
+          - public-frontend-v1.0.0
         default: site-scaffold-public-v0.1.1
       publish:
         description: Publish the audited versioned assets after verification
@@ -64,6 +65,8 @@ jobs:
           export_args=()
           if [ "${{ steps.source.outputs.template_only }}" = true ]; then export_args+=(--template-only); fi
           python3 _source/scaffold/scripts/export-public-frontend.py --theme-source _source/theme --output public-assets --registry-commit "${{ steps.source.outputs.registry }}" "${export_args[@]}"
+          python3 scripts/relabel-public-frontend-manifest.py --self-test
+          python3 scripts/relabel-public-frontend-manifest.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
           python3 scripts/verify-public-frontend.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
           python3 scripts/test-verify-public-frontend.py --artifacts public-assets --plan releases/${{ inputs.release_tag }}/plan.json
           python3 scripts/test-release-publication-admission.py

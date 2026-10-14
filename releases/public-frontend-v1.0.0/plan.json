@@ -1,0 +1,47 @@
+{
+  "tag": "public-frontend-v1.0.0",
+  "export_tag": "public-frontend-v0.1.1",
+  "repository": "xoxd-ai/bazel-registry",
+  "registry_commit": "8c6acc93ed68bce93efe3fed23e661b8fea1b447",
+  "artifacts": [
+    {
+      "module": "xoxd_public_chrome",
+      "version": "1.0.0",
+      "asset": "xoxd_public_chrome-1.0.0.tar.gz",
+      "strip_prefix": "xoxd_public_chrome-1.0.0",
+      "sha256": "1c3e44bf46f100ec96db285854d302a9cfb4b4a5e03b88aaad234d94bdb44cc0",
+      "integrity": "sha256-HD5Ev0bxAOyW2yhYVNMCqc+0tKXgO4iqrSNNlL20TMA=",
+      "files": 22
+    },
+    {
+      "module": "xoxd_theme",
+      "version": "0.1.1",
+      "asset": "xoxd_theme-0.1.1.tar.gz",
+      "strip_prefix": "xoxd_theme-0.1.1",
+      "sha256": "0ed06227ffbe40098b405f8cd203442a9b5411d88b1079dd39ebfbd197d54f45",
+      "integrity": "sha256-DtBiJ/++QAmLQF+M0gNEKptUEdiLEHndOev70ZfVT0U=",
+      "files": 26
+    },
+    {
+      "module": "site-scaffold-public",
+      "version": "1.0.0",
+      "asset": "site-scaffold-public-1.0.0.tar.gz",
+      "strip_prefix": "site-scaffold-public-1.0.0",
+      "sha256": "8b12e4974a131931086903285f6e5a6f76c9612064654304a2eceb8f4b0f7ecc",
+      "integrity": "sha256-ixLkl0oTGTEIaQMoX25ab3bJYSBkZUMEouzrj0sPfsw=",
+      "files": 47
+    }
+  ],
+  "sources": {
+    "scaffold": "115010fcc7f27a4691ba4345b53313ac5e44a74d",
+    "theme": "6c2e81a57dc0a71d5fff209b728309492222e50a"
+  },
+  "supersedes": [
+    {
+      "tag": "site-scaffold-public-v0.1.1",
+      "asset": "site-scaffold-public-0.1.1.tar.gz",
+      "sha256": "9d834297fbd8103f30758ac58364c59ba628c8b09d6114b093cc68d5a5acf9a4",
+      "reason": "Template 1.0.0 moves to the RU1 stack (SvelteKit 3.0.1, Svelte 5.57.2, Vite 8.3.3, TypeScript 7.0.2) with the RU13 patch set."
+    }
+  ]
+}
