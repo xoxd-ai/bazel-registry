@@ -13,7 +13,10 @@ exact `5.0.1`. The component source is unchanged from 0.1.0. Consumers pin
 Template 1.0.0 moves to SvelteKit 3.0.1, Svelte 5.57.2, Vite 8.3.3 and
 TypeScript 7.0.2 with the RU13 patch set, and supersedes template 0.1.1. It
 still pins `xoxd_public_chrome` 0.1.0. A template-only 1.0.1 re-pins it to
-1.0.0 after registration.
+1.0.0 after registration. The template `.bazelrc` pins this registry at
+`registry_commit`, which postdates the owner rename of the shipped tag-archive
+URLs to `xoxd-ai` (#183), so the template does not depend on GitHub redirects
+from the retired `tinyland-inc` owner.
 
 The scaffold export labels every full export `public-frontend-v0.1.1`; this
 plan names that label in `export_tag`, and the workflow relabels the manifest

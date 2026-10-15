@@ -2,7 +2,7 @@
   "tag": "public-frontend-v1.0.0",
   "export_tag": "public-frontend-v0.1.1",
   "repository": "xoxd-ai/bazel-registry",
-  "registry_commit": "8c6acc93ed68bce93efe3fed23e661b8fea1b447",
+  "registry_commit": "b8cc9d68610996000e6dec0f64ef996466f980d3",
   "artifacts": [
     {
       "module": "xoxd_public_chrome",
@@ -27,8 +27,8 @@
       "version": "1.0.0",
       "asset": "site-scaffold-public-1.0.0.tar.gz",
       "strip_prefix": "site-scaffold-public-1.0.0",
-      "sha256": "8b12e4974a131931086903285f6e5a6f76c9612064654304a2eceb8f4b0f7ecc",
-      "integrity": "sha256-ixLkl0oTGTEIaQMoX25ab3bJYSBkZUMEouzrj0sPfsw=",
+      "sha256": "0c8e3eb243d51476397807d77cb93e7612d6249b6faf99a9f84ff9c9f0bc2994",
+      "integrity": "sha256-DI4+skPVFHY5eAfXfLk+dhLWJJtvr5mp+E/5yfC8KZQ=",
       "files": 47
     }
   ],
