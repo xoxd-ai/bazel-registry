@@ -1,0 +1,13 @@
+{
+  "homepage": "https://github.com/xoxd-ai/bazel-payloads",
+  "maintainers": [
+    {
+      "name": "Jess Sullivan",
+      "email": "jess@sulliwood.org"
+    }
+  ],
+  "versions": [
+    "1.0.0"
+  ],
+  "yanked_versions": {}
+}
