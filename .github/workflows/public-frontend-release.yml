@@ -12,6 +12,7 @@ on:
           - xoxd-spectrogram-public-v1.0.1
           - xoxd-spectrogram-public-v1.1.0
           - xoxd-projection-v1.0.0
+          - xoxd-projection-v2.0.0
         default: site-scaffold-public-v0.1.1
       publish:
         description: Publish the audited versioned assets after verification

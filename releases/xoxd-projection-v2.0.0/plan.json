@@ -1,0 +1,20 @@
+{
+  "tag": "xoxd-projection-v2.0.0",
+  "repository": "xoxd-ai/bazel-registry",
+  "registry_commit": "75a06c59abf1b0e6f200072f842e4378cf30e069",
+  "artifacts": [
+    {
+      "module": "xoxd_projection",
+      "version": "2.0.0",
+      "asset": "xoxd_projection-2.0.0.tar.gz",
+      "strip_prefix": "xoxd_projection-2.0.0",
+      "sha256": "af5add47a40b9f48f314b4a80a8287b60ee4f7ddfeb2dc7f898ef1a7c3cd5bc5",
+      "integrity": "sha256-r1rdR6QLn0jzFLSoCoKHtg7k993+stx/iY7xp8PNW8U=",
+      "files": 129
+    }
+  ],
+  "exporter": "scaffold-modules",
+  "sources": {
+    "scaffold": "0cf0a19326f025904b4d2f68a1d822a913e7943b"
+  }
+}
