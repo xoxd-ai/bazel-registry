@@ -141,6 +141,9 @@ removing it is a follow-up.
 
 ## Docs
 
+- [`docs/private-module-sources.md`](./docs/private-module-sources.md): how a
+  module with a private source repository is listed, and what a consumer
+  needs to fetch it (TIN-8727).
 - [`docs/bazel-adoption-v0.md`](./docs/bazel-adoption-v0.md) — the full
   estate-wide Bazel adoption spec (Step A): single-version convergence,
   the two-registry chain, the exact-SHA pin convention, endpoint-free
