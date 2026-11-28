@@ -9,6 +9,7 @@
 				"//:source_hosts_test",
 				"//:owner_rename_record_test",
 				"//:smoke_pins_test",
+				"//:touched_modules_test",
 				"//:immutability_gate_self_test",
 				"@xoxd_public_chrome//:pkg",
 				"@xoxd_theme//:pkg",

@@ -46,6 +46,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # The touched-module step diffs this commit against its base, so it
+          # needs the history. The whole registry history is about a megabyte.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -116,6 +119,19 @@ jobs:
       - name: Build isolated scheduling-bridge consumer
         run: npm run smoke:scheduling-bridge-only
         env:
+          TINYLAND_REGISTRY_GITHUB_TOKEN: ${{ steps.tinyland-registry-token.outputs.token }}
+      # caldav-client is public, so this consumer runs without the token: it
+      # proves the public archive path for the newest listed version.
+      - name: Build isolated caldav-client consumer
+        run: npm run smoke:caldav-client-only
+      # The newest listed version of every module this change touched, each in
+      # its own consumer (TIN-8910). A pull request diffs its merge commit
+      # against the base tip, the first parent. A push diffs against the
+      # commit main held before it.
+      - name: Build the newest listed version of each touched module
+        run: npm run smoke:touched
+        env:
+          SMOKE_TOUCHED_BASE: ${{ github.event_name == 'push' && github.event.before || '' }}
           TINYLAND_REGISTRY_GITHUB_TOKEN: ${{ steps.tinyland-registry-token.outputs.token }}
       - name: Audit aggregate active-module graph (legacy compatibility)
         continue-on-error: true

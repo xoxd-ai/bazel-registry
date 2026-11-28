@@ -52,6 +52,15 @@ js_test(
     size = "small",
 )
 
+# The trusted consumer job finds the modules a change touched and the targets
+# that build each one (TIN-8910).
+js_test(
+    name = "touched_modules_test",
+    data = ["scripts/touched-modules.mjs"],
+    entry_point = "scripts/test-touched-modules.mjs",
+    size = "small",
+)
+
 # GF's head work writes the authenticated Git history of the pushed window
 # here before the action runs: `git log -p -U0` records, the base and head
 # commits and their count. The directory is never tracked.

@@ -69,6 +69,11 @@ anything. When this file and those docs disagree, the docs win.
   `MODULE.bazel.lock` in the same PR. `//:smoke_pins_test` fails otherwise.
 - The private-consumer smokes stay in the `trusted-private-consumers` Actions
   job, because only Actions holds the registry-reader App key.
+- That job also builds the newest listed caldav-client as an external module,
+  and the newest listed version of every module the change touched, each in
+  its own consumer (TIN-8910). A touched module builds `//:pkg` unless
+  `scripts/touched-modules.mjs` names its consumer targets. A module with no
+  consumer target must be listed there with a null target list and a reason.
 
 ## Coordination
 

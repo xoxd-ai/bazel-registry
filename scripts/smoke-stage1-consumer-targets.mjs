@@ -4,6 +4,8 @@ import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
 
+import { consumerTargets, isAcceptedBase, resolveBase, touchedModuleNames } from './touched-modules.mjs';
+
 const root = process.cwd();
 
 // Bazel's order for release identifiers: numeric parts compare as numbers and
@@ -165,6 +167,80 @@ function promptToonScenario() {
     };
 }
 
+// caldav-client: a public GitHub tag archive, token-free. It builds //:pkg as
+// an external module, the way the module's own consumer workspace does, so a
+// new listing that does not build fails here (TIN-8910).
+function caldavClientScenario() {
+    const version = latestPublishedVersion('tummycrypt_tinyland_caldav_client');
+    return {
+        key: 'caldav-client-only',
+        workspaceName: 'tinyland_registry_caldav_client_only_smoke',
+        modules: [{ moduleName: 'tummycrypt_tinyland_caldav_client', version }],
+        targets: ['@tummycrypt_tinyland_caldav_client//:pkg'],
+        graphExpectation: { moduleName: 'tummycrypt_tinyland_caldav_client', version },
+        requiresPrivateArchiveAuth: false,
+        tokenFree: true,
+        successLabel: `Built token-free caldav-client consumer target (${version})`,
+    };
+}
+
+// True when a listed version's archive is an api.github.com tarball, the
+// shape this registry allows only for a private repository.
+function hasPrivateSource(moduleName, version) {
+    const sourcePath = path.join(root, 'modules', moduleName, version, 'source.json');
+    const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+    return new URL(source.url).hostname === 'api.github.com';
+}
+
+// One isolated consumer per module the change touched, each building the
+// newest listed version (TIN-8910). The base is SMOKE_TOUCHED_BASE, a 40-hex
+// commit, or else the first parent of HEAD: the base branch tip for a pull
+// request merge commit and the previous main for a merge on main. See
+// resolveBase in scripts/touched-modules.mjs.
+function touchedModuleScenarios() {
+    const base = resolveBase(process.env.SMOKE_TOUCHED_BASE);
+    if (!isAcceptedBase(base)) {
+        throw new Error(`SMOKE_TOUCHED_BASE must be a 40-hex commit; got ${JSON.stringify(base)}`);
+    }
+    const diff = spawnSync('git', ['diff', '--name-only', '--no-renames', base, 'HEAD', '--', 'modules'], {
+        cwd: root,
+        encoding: 'utf8',
+    });
+    if (diff.error || diff.status !== 0) {
+        throw new Error(`git diff against ${base} failed: ${diff.error?.message ?? diff.stderr}`);
+    }
+    const names = touchedModuleNames(diff.stdout.split('\n'));
+    console.log(`Modules touched since ${base}: ${names.join(', ') || 'none'}`);
+
+    const scenarios = [];
+    for (const moduleName of names) {
+        if (!fs.existsSync(path.join(root, 'modules', moduleName, 'metadata.json'))) {
+            throw new Error(`${moduleName} was touched but has no metadata.json at HEAD`);
+        }
+        const metadata = JSON.parse(fs.readFileSync(path.join(root, 'modules', moduleName, 'metadata.json'), 'utf8'));
+        const yanked = new Set(Object.keys(metadata.yanked_versions ?? {}));
+        if (!(metadata.versions ?? []).some((version) => !yanked.has(version))) {
+            console.log(`Not built: ${moduleName} has no active listed version.`);
+            continue;
+        }
+        const version = latestPublishedVersion(moduleName);
+        const { targets, reason } = consumerTargets(moduleName);
+        if (targets === null) {
+            console.log(`Not built: ${moduleName} ${version} declares no consumer target (${reason}).`);
+            continue;
+        }
+        scenarios.push({
+            key: `touched:${moduleName}`,
+            workspaceName: 'tinyland_registry_touched_module_smoke',
+            modules: [{ moduleName, version }],
+            targets,
+            graphExpectation: { moduleName, version },
+            requiresPrivateArchiveAuth: hasPrivateSource(moduleName, version),
+            successLabel: `Built the newest listed version of touched module ${moduleName} (${version})`,
+        });
+    }
+    return scenarios;
+}
 const scenarioFactories = {
     stage1: () => ({
         key: 'stage1',
@@ -192,6 +268,9 @@ const scenarioFactories = {
     'public-frontend-only': publicFrontendScenario,
     'rules-tectonic-only': rulesTectonicScenario,
     'prompt-toon-only': promptToonScenario,
+    'caldav-client-only': caldavClientScenario,
+    // Not a fixed scenario: one consumer per module the change touched.
+    touched: touchedModuleScenarios,
 };
 
 const scenarioArgument = process.argv.find((argument) => argument.startsWith('--scenario='));
@@ -201,32 +280,33 @@ if (!scenarioFactory) {
     console.error(`Unknown consumer smoke scenario: ${scenarioName}`);
     process.exit(2);
 }
-const scenario = scenarioFactory();
+// A factory returns one scenario, or a list for the touched-module mode.
+const scenarios = [scenarioFactory()].flat();
 
 const registryToken = process.env.TINYLAND_REGISTRY_GITHUB_TOKEN;
 const githubToken = registryToken || process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-if (scenario.requiresPrivateArchiveAuth && process.env.CI && !registryToken) {
-    console.error(
-        `${scenario.key} requires TINYLAND_REGISTRY_GITHUB_TOKEN in CI; private archive proof cannot skip or fall back to the repository-scoped GITHUB_TOKEN.`,
-    );
-    process.exit(1);
-}
-if (scenario.requiresPrivateArchiveAuth && !githubToken) {
-    console.error(`${scenario.key} requires GitHub credentials for private module archives.`);
-    process.exit(1);
+
+function credentialFailure(scenario) {
+    if (scenario.requiresPrivateArchiveAuth && process.env.CI && !registryToken) {
+        return `${scenario.key} requires TINYLAND_REGISTRY_GITHUB_TOKEN in CI; private archive proof cannot skip or fall back to the repository-scoped GITHUB_TOKEN.`;
+    }
+    if (scenario.requiresPrivateArchiveAuth && !githubToken) {
+        return `${scenario.key} requires GitHub credentials for private module archives.`;
+    }
+    return undefined;
 }
 
-function writeGitHubCredentialHelper(smokeDir) {
-	// A token-free scenario proves the public path: never attach credentials,
-	// even when a token happens to be in the environment.
-	if (scenario.tokenFree || !githubToken) {
-		return [];
-	}
+function writeGitHubCredentialHelper(scenario, smokeDir) {
+    // A token-free scenario proves the public path: never attach credentials,
+    // even when a token happens to be in the environment.
+    if (scenario.tokenFree || !githubToken) {
+        return [];
+    }
 
-	const helperPath = path.join(smokeDir, 'github-credential-helper.mjs');
-	fs.writeFileSync(
-		helperPath,
-		`#!/usr/bin/env node
+    const helperPath = path.join(smokeDir, 'github-credential-helper.mjs');
+    fs.writeFileSync(
+        helperPath,
+        `#!/usr/bin/env node
 const token = process.env.TINYLAND_REGISTRY_GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 if (!token) process.exit(1);
 process.stdout.write(JSON.stringify({
@@ -236,12 +316,12 @@ process.stdout.write(JSON.stringify({
   },
 }));
 `,
-		{ mode: 0o700 },
-	);
+        { mode: 0o700 },
+    );
 
-	return [
-		`--credential_helper=api.github.com=${helperPath}`,
-	];
+    return [
+        `--credential_helper=api.github.com=${helperPath}`,
+    ];
 }
 
 // Startup options for every Bazel call in the temporary workspace. The idle
@@ -253,61 +333,110 @@ const bazelStartupArgs = ['--ignore_all_rc_files', '--max_idle_secs=120'];
 // Bazel JVM on every run (batch mode outside a workspace, a server under one).
 // A PATH lookup runs nothing (TIN-5770 R472).
 function isOnPath(command) {
-	for (const dir of (process.env.PATH ?? '').split(path.delimiter)) {
-		if (!dir) {
-			continue;
-		}
-		const candidate = path.join(dir, command);
-		try {
-			fs.accessSync(candidate, fs.constants.X_OK);
-			if (fs.statSync(candidate).isFile()) {
-				return true;
-			}
-		} catch {
-			// Not in this PATH entry.
-		}
-	}
-	return false;
+    for (const dir of (process.env.PATH ?? '').split(path.delimiter)) {
+        if (!dir) {
+            continue;
+        }
+        const candidate = path.join(dir, command);
+        try {
+            fs.accessSync(candidate, fs.constants.X_OK);
+            if (fs.statSync(candidate).isFile()) {
+                return true;
+            }
+        } catch {
+            // Not in this PATH entry.
+        }
+    }
+    return false;
 }
 
 function resolveBazelCommand() {
-	for (const command of ['bazelisk', 'bazel']) {
-		if (isOnPath(command)) {
-			return { command, prefixArgs: [] };
-		}
-	}
+    for (const command of ['bazelisk', 'bazel']) {
+        if (isOnPath(command)) {
+            return { command, prefixArgs: [] };
+        }
+    }
 
-	return { command: 'npx', prefixArgs: ['--yes', '@bazel/bazelisk'] };
+    return { command: 'npx', prefixArgs: ['--yes', '@bazel/bazelisk'] };
 }
 
-const smokeDir = fs.mkdtempSync(path.join(os.tmpdir(), `${scenario.workspaceName}-`));
-let exitCode = 0;
-let bazel;
-try {
-	const credentialHelperArgs = writeGitHubCredentialHelper(smokeDir);
-	bazel = resolveBazelCommand();
-	const moduleBazel = [
-        `module(name = "${scenario.workspaceName}", version = "0.0.0")`,
-        ...scenario.modules.map(
-            ({ moduleName, version }) => `bazel_dep(name = "${moduleName}", version = "${version}")`,
-        ),
-		'',
-	].join('\n');
-	fs.writeFileSync(path.join(smokeDir, 'MODULE.bazel'), moduleBazel);
-	fs.writeFileSync(path.join(smokeDir, '.bazelversion'), fs.readFileSync(path.join(root, '.bazelversion')));
+// Build one scenario in its own temporary workspace and Bazel server.
+function runScenario(scenario) {
+    const smokeDir = fs.mkdtempSync(path.join(os.tmpdir(), `${scenario.workspaceName}-`));
+    let exitCode = 0;
+    let bazel;
+    try {
+        const credentialHelperArgs = writeGitHubCredentialHelper(scenario, smokeDir);
+        bazel = resolveBazelCommand();
+        const moduleBazel = [
+            `module(name = "${scenario.workspaceName}", version = "0.0.0")`,
+            ...scenario.modules.map(
+                ({ moduleName, version }) => `bazel_dep(name = "${moduleName}", version = "${version}")`,
+            ),
+            '',
+        ].join('\n');
+        fs.writeFileSync(path.join(smokeDir, 'MODULE.bazel'), moduleBazel);
+        fs.writeFileSync(path.join(smokeDir, '.bazelversion'), fs.readFileSync(path.join(root, '.bazelversion')));
 
-    if (scenario.graphExpectation) {
-        const graphResult = spawnSync(
+        if (scenario.graphExpectation) {
+            const graphResult = spawnSync(
+                bazel.command,
+                [
+                    ...bazel.prefixArgs,
+                    ...bazelStartupArgs,
+                    'mod',
+                    'graph',
+                    '--output=text',
+                    '--charset=ascii',
+                    '--verbose=false',
+                    '--include_unused=false',
+                    ...credentialHelperArgs,
+                    '--enable_bzlmod',
+                    '--lockfile_mode=off',
+                    `--registry=file://${root}`,
+                    '--registry=https://bcr.bazel.build',
+                ],
+                {
+                    cwd: smokeDir,
+                    encoding: 'utf8',
+                },
+            );
+
+            process.stdout.write(graphResult.stdout ?? '');
+            process.stderr.write(graphResult.stderr ?? '');
+            if (graphResult.error) {
+                console.error('Failed to spawn bazel mod graph:', graphResult.error.message);
+                exitCode = 1;
+            } else if (graphResult.status !== 0) {
+                exitCode = graphResult.status ?? 1;
+            } else {
+                const expected = `${scenario.graphExpectation.moduleName}@${scenario.graphExpectation.version}`;
+                const escapedModuleName = scenario.graphExpectation.moduleName.replace(
+                    /[.*+?^${}()|[\]\\]/g,
+                    '\\$&',
+                );
+                const selectedVersions = new Set(
+                    [...(graphResult.stdout ?? '').matchAll(new RegExp(`${escapedModuleName}@([0-9A-Za-z.+_-]+)`, 'g'))]
+                        .map((match) => match[1]),
+                );
+                if (selectedVersions.size !== 1 || !selectedVersions.has(scenario.graphExpectation.version)) {
+                    console.error(
+                        `Isolated graph selected ${scenario.graphExpectation.moduleName}@${[...selectedVersions].join(',') || '<missing>'}; expected the published edge ${expected}.`,
+                    );
+                    exitCode = 1;
+                } else {
+                    console.log(`Isolated graph selected ${expected}.`);
+                }
+            }
+        }
+
+        const result = exitCode === 0 ? spawnSync(
             bazel.command,
             [
                 ...bazel.prefixArgs,
                 ...bazelStartupArgs,
-                'mod',
-                'graph',
-                '--output=text',
-                '--charset=ascii',
-                '--verbose=false',
-                '--include_unused=false',
+                'build',
+                ...scenario.targets,
                 ...credentialHelperArgs,
                 '--enable_bzlmod',
                 '--lockfile_mode=off',
@@ -317,77 +446,52 @@ try {
             {
                 cwd: smokeDir,
                 encoding: 'utf8',
+                stdio: 'inherit',
             },
-        );
+        ) : undefined;
 
-        process.stdout.write(graphResult.stdout ?? '');
-        process.stderr.write(graphResult.stderr ?? '');
-        if (graphResult.error) {
-            console.error('Failed to spawn bazel mod graph:', graphResult.error.message);
+        if (result?.error) {
+            console.error('Failed to spawn bazel:', result.error.message);
             exitCode = 1;
-        } else if (graphResult.status !== 0) {
-            exitCode = graphResult.status ?? 1;
-        } else {
-            const expected = `${scenario.graphExpectation.moduleName}@${scenario.graphExpectation.version}`;
-            const escapedModuleName = scenario.graphExpectation.moduleName.replace(
-                /[.*+?^${}()|[\]\\]/g,
-                '\\$&',
-            );
-            const selectedVersions = new Set(
-                [...(graphResult.stdout ?? '').matchAll(new RegExp(`${escapedModuleName}@([0-9A-Za-z.+_-]+)`, 'g'))]
-                    .map((match) => match[1]),
-            );
-            if (selectedVersions.size !== 1 || !selectedVersions.has(scenario.graphExpectation.version)) {
-                console.error(
-                    `Isolated graph selected ${scenario.graphExpectation.moduleName}@${[...selectedVersions].join(',') || '<missing>'}; expected the published edge ${expected}.`,
-                );
-                exitCode = 1;
-            } else {
-                console.log(`Isolated graph selected ${expected}.`);
-            }
+        } else if (result && result.status !== 0) {
+            exitCode = result.status ?? 1;
         }
-    }
 
-    const result = exitCode === 0 ? spawnSync(
-        bazel.command,
-        [
-            ...bazel.prefixArgs,
-            ...bazelStartupArgs,
-            'build',
-            ...scenario.targets,
-			...credentialHelperArgs,
-			'--enable_bzlmod',
-			'--lockfile_mode=off',
-			`--registry=file://${root}`,
-			'--registry=https://bcr.bazel.build',
-		],
-		{
-			cwd: smokeDir,
-			encoding: 'utf8',
-            stdio: 'inherit',
-        },
-    ) : undefined;
-
-    if (result?.error) {
-        console.error('Failed to spawn bazel:', result.error.message);
-        exitCode = 1;
-    } else if (result && result.status !== 0) {
-        exitCode = result.status ?? 1;
+        if (exitCode === 0) {
+            console.log(`${scenario.successLabel}: ${scenario.targets.join(', ')}`);
+        }
+    } finally {
+        // Stop this workspace's server before its directory goes away. A failed
+        // shutdown does not change the result: the idle limit still applies.
+        if (bazel) {
+            spawnSync(bazel.command, [...bazel.prefixArgs, ...bazelStartupArgs, 'shutdown'], {
+                cwd: smokeDir,
+                stdio: 'ignore',
+            });
+        }
+        fs.rmSync(smokeDir, { recursive: true, force: true });
     }
+    return exitCode;
+}
 
-    if (exitCode === 0) {
-        console.log(`${scenario.successLabel}: ${scenario.targets.join(', ')}`);
+if (scenarios.length === 0) {
+    console.log(`${scenarioName}: no consumer to build.`);
+}
+let exitCode = 0;
+const failed = [];
+for (const scenario of scenarios) {
+    const failure = credentialFailure(scenario);
+    if (failure) {
+        console.error(failure);
     }
-} finally {
-	// Stop this workspace's server before its directory goes away. A failed
-	// shutdown does not change the result: the idle limit still applies.
-	if (bazel) {
-		spawnSync(bazel.command, [...bazel.prefixArgs, ...bazelStartupArgs, 'shutdown'], {
-			cwd: smokeDir,
-			stdio: 'ignore',
-		});
-	}
-	fs.rmSync(smokeDir, { recursive: true, force: true });
+    const code = failure ? 1 : runScenario(scenario);
+    if (code !== 0) {
+        failed.push(scenario.key);
+        exitCode = exitCode || code;
+    }
+}
+if (failed.length > 0) {
+    console.error(`Consumer smoke failed: ${failed.join(', ')}`);
 }
 
 process.exit(exitCode);
