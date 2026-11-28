@@ -14,7 +14,10 @@
     "smoke:tempo-store-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=tempo-store-only",
     "smoke:public-frontend-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=public-frontend-only",
     "smoke:rules-tectonic-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=rules-tectonic-only",
-    "smoke:prompt-toon-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=prompt-toon-only"
+    "smoke:prompt-toon-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=prompt-toon-only",
+    "smoke:caldav-client-only": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=caldav-client-only",
+    "smoke:touched": "node scripts/smoke-stage1-consumer-targets.mjs --scenario=touched",
+    "test:touched-modules": "node scripts/test-touched-modules.mjs"
   },
   "bazelEstate": {
     "version": "9.2.0"
